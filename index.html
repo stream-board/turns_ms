@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Project Architecture Turns</title>
+    <link rel="stylesheet" href="">
+</head>
+<body>
+<div class="chat js-feak-info" data-sender="usuario">
+<h1>Stream board turns</h1>
+<button type="" class="js-ask-permission" data-user-id="1" data-user-nick="Usuario12">Pedir permiso</button>
+<div class="js-chat-messages">
+
+</div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+    var socket = io();
+    $('.js-ask-permission').on('click', function() {
+        var userId = $(this).data('user-id');
+        var userNick = $(this).data('user-nick');
+        socker.emit('ask for permission', userId, userNick);
+    });
+
+    socket.on('ask for permission', function() {
+
+    })
+})
+</script>
+</body>
+
+</html>
