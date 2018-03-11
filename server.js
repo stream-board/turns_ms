@@ -20,7 +20,7 @@ io.on('connection', function(socket) {
     console.log('user connected');
 
     socket.on('register id', function(userNick, userId) {
-        redisClient.set(userNick, userId, function () {
+        redisClient.set(userNick, socket.id, function () {
             console.log(userNick + 'in redis');
         });
     });
@@ -45,7 +45,15 @@ io.on('connection', function(socket) {
     });
 
     socket.on('answer for board', function(adminRes, userId, userNick) {
+        console.log(adminRes);
+        var msg = 'Tu solicitud del tablero fue rechazada';
+        if(adminRes) {
+            msg = 'Tienes permiso para usar el tablero';
+        };
 
+        redisClient.get(userNick, function (err, socketId) {
+            socket.broadcast.to(socketId).emit('answer for board',msg);
+        })
     });
 
 });
