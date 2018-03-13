@@ -1,4 +1,5 @@
-var app = require('express')();
+var express  = require('express');
+var app = express();
 var http = require('http').Server(app);
 var port = process.env.PORT || 8000;
 
@@ -12,39 +13,41 @@ http.listen(port, function() {
     console.log('server started. listening on :' + port);
 });
 
+app.use(express.static('views'));
+
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/index.html');
+    res.sendFiles(__dirname + '/views/index.html');
 });
 
 io.on('connection', function(socket) {
     console.log('user connected');
 
-    socket.on('register id', function(userNick, userId) {
+    socket.on('registerId', function(userNick, userId) {
         redisClient.set(userNick, socket.id, function () {
             console.log(userNick + 'in redis');
         });
     });
 
-    socket.on('set admin id', function(userId) {
+    socket.on('setAdminId', function(userId) {
         redisClient.set('admin', socket.id, function () {
             console.log('admin id setted');
         });
     });
 
-    socket.on('ask for board', function(userId, userNick) {
+    socket.on('askForBoard', function(userId, userNick) {
         console.log('user ' + userNick + ' ask');
 
         redisClient.get('admin', function(err, socketId) {
             console.log(socketId);
             socket.broadcast.to(socketId).emit(
-                'ask for board',
+                'askForBoard',
                 userId,
                 userNick
             );
         });
     });
 
-    socket.on('answer for board', function(adminRes, userId, userNick) {
+    socket.on('answerForBoard', function(adminRes, userId, userNick) {
         console.log(adminRes);
         var msg = 'Tu solicitud del tablero fue rechazada';
         if(adminRes) {
@@ -52,9 +55,13 @@ io.on('connection', function(socket) {
         };
 
         redisClient.get(userNick, function (err, socketId) {
-            socket.broadcast.to(socketId).emit('answer for board',msg);
+            socket.broadcast.to(socketId).emit('answerForBoard',msg);
         })
     });
+
+    socket.on('restorePermission', function () {
+
+    })
 
 });
 
